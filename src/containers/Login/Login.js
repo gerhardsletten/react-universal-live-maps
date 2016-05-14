@@ -22,8 +22,8 @@ export default class Login extends Component {
     password: ''
   }
 
-  handleChange = (name, value) => {
-    this.setState({...this.state, [name]: value})
+  handleChange = (name, event) => {
+    this.setState({...this.state, [name]: event.target.value})
   }
 
   handleSubmit = (event) => {
