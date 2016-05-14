@@ -1,0 +1,21 @@
+.container {
+  padding: 40px;
+}
+.container input,
+.container button {
+  display: inline-block;
+  margin: 3px;
+}
+.container p {
+  margin-bottom: 1em;
+}
+.block {
+  margin-bottom: 1em;
+}
+.block label {
+  display: block;
+}
+.block input {
+  padding: 5px;
+  width: 100%;
+}

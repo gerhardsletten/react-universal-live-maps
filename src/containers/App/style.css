@@ -1,0 +1,32 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background: #333;
+  font-family: sans-serif;
+  color: #fff;
+}
+a {
+  color: #fff;
+}
+body > div {
+  height: 100%;
+}
+.container {
+  height: 100%;
+}
+.userBar {
+  z-index: 100;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 10px;
+  color: #fff;
+  background: #333;
+  font-size: 12px;
+}
