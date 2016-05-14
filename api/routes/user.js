@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import config from '../../src/config'
 
 function login (req, res) {
-  if (req.body.username === 'gersh' && req.body.password === 'hemmelig') {
+  if (req.body.username === config.username && req.body.password === config.password) {
     const user = {
       username: req.body.username
     }

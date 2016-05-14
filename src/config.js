@@ -18,6 +18,8 @@ module.exports = Object.assign({
   sessionSecret: process.env.SESSION_SECRET || 'supersecret',
   sessionTimeoutDays: process.env.SESSION_TIMEOUT || 7,
   tokenSecret: process.env.TOKEN_SECRET || 'supersecret',
+  username: process.env.USERNAME || 'admin',
+  password: process.env.PASSWORD || 'secret',
   app: {
     title: 'Livemaps',
     description: 'En beskrivelse',
