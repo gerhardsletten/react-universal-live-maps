@@ -7,6 +7,7 @@ import {isLoaded, load as loadMaps, add as addMap, edit as editMap, remove} from
 import omit from 'object.omit'
 import moment from 'moment'
 import DateTime from 'react-datetime'
+import featureDefault from './featureDefault.json'
 import style from './style.css'
 
 @asyncConnect([{
@@ -43,9 +44,7 @@ export default class Admin extends Component {
 
   handleChangeDate = (name, value) => {
     if (value.toDate) {
-      this.setState({item: {...this.state.item, [name]: value.toDate()}}, () => {
-        console.log(this.state.item)
-      })
+      this.setState({item: {...this.state.item, [name]: value.toDate()}})
     }
   }
 
@@ -80,7 +79,8 @@ export default class Admin extends Component {
         title: 'New map',
         url: 'http://bikemaster.no/kmlDownload.asp?r=46',
         date: m.toDate(),
-        date_end: moment(m).add(4, 'hour').toDate()
+        date_end: moment(m).add(4, 'hour').toDate(),
+        features: JSON.stringify(featureDefault)
       }
     })
   }
@@ -94,7 +94,8 @@ export default class Admin extends Component {
       showForm: true,
       item: Object.assign({}, omit(item, 'course'), {
         date: moment(item.date).toDate(),
-        date_end: moment(item.date_end).toDate()
+        date_end: moment(item.date_end).toDate(),
+        features: item.features ? JSON.stringify(item.features) : ''
       })
     })
   }
@@ -119,11 +120,15 @@ export default class Admin extends Component {
         </div>
         <div className={style.block}>
           <label>Event start</label>
-          <DateTime value={item.date} dateFormat='DD. MMM YYYY' timeFormat='HH:mm:ss' onChange={this.handleChangeDate.bind(this, 'date_end')} />
+          <DateTime value={item.date} dateFormat='DD. MMM YYYY' timeFormat='HH:mm:ss' onChange={this.handleChangeDate.bind(this, 'date')} />
         </div>
         <div className={style.block}>
           <label>Event end</label>
           <DateTime value={item.date_end} dateFormat='DD. MMM YYYY' timeFormat='HH:mm:ss' onChange={this.handleChangeDate.bind(this, 'date_end')} />
+        </div>
+        <div className={style.block}>
+          <label>GeoJSON feature collection</label>
+          <textarea value={item.features} onChange={this.handleChange.bind(this, 'features')} placeholder={JSON.stringify(featureDefault)} />
         </div>
         <div className={style.block}>
           <label>KML Url</label>

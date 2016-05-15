@@ -22,6 +22,9 @@ var MapSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.LineString,
     required: true
   },
+  features: {
+    type: mongoose.Schema.Types.FeatureCollection
+  },
   created: {
     type: Date,
     default: Date.now

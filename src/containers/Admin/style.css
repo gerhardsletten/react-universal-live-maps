@@ -15,7 +15,11 @@
 .block label {
   display: block;
 }
-.block input {
+.block input,
+.block textarea {
   padding: 5px;
   width: 100%;
+}
+.block textarea {
+  min-height: 150px;
 }
