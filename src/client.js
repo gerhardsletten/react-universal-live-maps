@@ -3,7 +3,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import createStore from './redux/create'
 import ApiClient from './helpers/ApiClient'
-import io from 'socket.io-client'
 import {Provider} from 'react-redux'
 import {Router, browserHistory} from 'react-router'
 import {syncHistoryWithStore} from 'react-router-redux'
@@ -14,13 +13,6 @@ const client = new ApiClient()
 const dest = document.getElementById('content')
 const store = createStore(browserHistory, client, window.__data)
 const history = syncHistoryWithStore(browserHistory, store)
-
-function initSocket () {
-  const socket = io('', {path: '/ws'})
-  return socket
-}
-
-global.socket = initSocket()
 
 const component = (
   <Router render={(props) =>
