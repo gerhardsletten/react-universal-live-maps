@@ -75,7 +75,7 @@ export default class MapView extends Component {
     const course = this.toGeoJSON(coordinates, 'LineString')
     const distanceTotal = turf.lineDistance(course, 'kilometers')
     return (
-      <div className={style.info}>{title}: {distanceTotal.toFixed(2)} km</div>
+      <div className={style.info}>{title}</div>
     )
   }
 
@@ -145,7 +145,8 @@ export default class MapView extends Component {
     return {
       url: icons[type],
       anchor: {x: 16, y: 16},
-      scaledSize: {height: 32, width: 32}
+      size: {height: 32, width: 32},
+      scaledSize: {height: 24, width: 24}
     }
   }
 
