@@ -31,6 +31,7 @@ router.route('/user/load').get(User.loadAuth)
 
 /* Message routes */
 router.route('/maps').get(Maps.readAll)
+router.route('/maps/live').get(Maps.live)
 router.route('/maps/:id').get(Maps.readOne)
 router.route('/maps/:id').put(User.requireAuth, Maps.edit)
 router.route('/maps').post(User.requireAuth, Maps.create)

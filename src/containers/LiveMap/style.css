@@ -1,0 +1,33 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+}
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  line-height: 40px;
+  font-size: 11px;
+}
+.title {
+  color: #FFD634;
+}
+.live {
+  background: #FFD634;
+  float:left;
+  line-height: 40px; 
+  padding: 0 15px;
+  margin-right: 15px;
+  color: #000;
+}

@@ -53,7 +53,7 @@ export default class App extends Component {
     return (
       <div className={style.container}>
         {user && (
-          <div className={style.userBar}><Link to='/'>Home</Link> <Link to='/admin'>Admin</Link> Logged in as {user.username} <button onClick={this.handleLogout}>Logout</button></div>
+          <div className={style.userBar}><Link to='/'>Live</Link> <Link to='/maps'>Maps</Link> <Link to='/admin'>Admin</Link> Logged in as {user.username} <button onClick={this.handleLogout}>Logout</button></div>
         )}
         {this.props.children}
       </div>

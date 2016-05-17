@@ -5,6 +5,7 @@ import {
     App,
     MapList,
     MapView,
+    LiveMap,
     Login,
     NotFound,
     Admin
@@ -29,7 +30,7 @@ export default (store) => {
 
   return (
     <Route path='/' component={App}>
-      <IndexRoute component={MapList}/>
+      <IndexRoute component={LiveMap}/>
       <Route path='/maps' component={MapList}/>
       <Route path='/maps/:id' component={MapView}/>
       <Route onEnter={requireLogin}>

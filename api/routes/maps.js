@@ -6,13 +6,47 @@ import Map from '../models/Map'
 import moment from 'moment'
 
 function readAll (req, res) {
-  Map.find({}).select('title url date date_end features')
+  Map
+  .find({})
+  .select('title url date date_end features')
+  .sort('date')
+  .exec()
   .then((maps) => res.json(maps))
 }
 
+function liveAll (req, res) {
+  Map
+  .find({
+    date_end: {
+      $gte: new Date()
+    }
+  })
+  .select('title url date date_end features')
+  .sort('date')
+  .limit(1)
+  .exec()
+  .then((maps) => res.json(maps))
+}
+
+function live (req, res) {
+  Map
+  .findOne({
+    date_end: {
+      $gte: new Date()
+    }
+  })
+  .sort('date')
+  .then((doc) => {
+    res.json(doc)
+  })
+  .catch((err) => {
+    res.status(403).json(err)
+  })
+}
+
 function readOne (req, res) {
-  Map.findOne({_id: req.params.id})
-  .select('title course url date date_end features')
+  Map
+  .findOne({_id: req.params.id})
   .then((doc) => {
     res.json(doc)
   })
@@ -122,6 +156,7 @@ function remove (req, res) {
 
 const Maps = {
   readAll,
+  live,
   readOne,
   edit,
   create,

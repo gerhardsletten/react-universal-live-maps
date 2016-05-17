@@ -1,18 +1,18 @@
-const LOAD = 'livemaps/messages/LOAD'
-const LOAD_SUCCESS = 'livemaps/messages/LOAD_SUCCESS'
-const LOAD_FAIL = 'livemaps/messages/LOAD_FAIL'
-const LOADONE = 'livemaps/messages/LOADONE'
-const LOADONE_SUCCESS = 'livemaps/messages/LOADONE_SUCCESS'
-const LOADONE_FAIL = 'livemaps/messages/LOADONE_FAIL'
-const ADD = 'livemaps/messages/ADD'
-const ADD_SUCCESS = 'livemaps/messages/ADD_SUCCESS'
-const ADD_FAIL = 'livemaps/messages/ADD_FAIL'
-const EDIT = 'livemaps/messages/EDIT'
-const EDIT_SUCCESS = 'livemaps/messages/EDIT_SUCCESS'
-const EDIT_FAIL = 'livemaps/messages/EDIT_FAIL'
-const REMOVE = 'livemaps/messages/REMOVE'
-const REMOVE_SUCCESS = 'livemaps/messages/REMOVE_SUCCESS'
-const REMOVE_FAIL = 'livemaps/messages/REMOVE_FAIL'
+const LOAD = 'livemaps/maps/LOAD'
+const LOAD_SUCCESS = 'livemaps/maps/LOAD_SUCCESS'
+const LOAD_FAIL = 'livemaps/maps/LOAD_FAIL'
+const LOADONE = 'livemaps/maps/LOADONE'
+const LOADONE_SUCCESS = 'livemaps/maps/LOADONE_SUCCESS'
+const LOADONE_FAIL = 'livemaps/maps/LOADONE_FAIL'
+const ADD = 'livemaps/maps/ADD'
+const ADD_SUCCESS = 'livemaps/maps/ADD_SUCCESS'
+const ADD_FAIL = 'livemaps/maps/ADD_FAIL'
+const EDIT = 'livemaps/maps/EDIT'
+const EDIT_SUCCESS = 'livemaps/maps/EDIT_SUCCESS'
+const EDIT_FAIL = 'livemaps/maps/EDIT_FAIL'
+const REMOVE = 'livemaps/maps/REMOVE'
+const REMOVE_SUCCESS = 'livemaps/maps/REMOVE_SUCCESS'
+const REMOVE_FAIL = 'livemaps/maps/REMOVE_FAIL'
 
 const initialState = {
   loaded: false,
@@ -31,7 +31,13 @@ export default function reducer (state = initialState, action = {}) {
         ...state,
         loading: false,
         loaded: true,
-        items: action.result
+        items: action.result.map((item) => {
+          const found = state.items.find((prevItem) => prevItem._id === item._id)
+          if (found) {
+            return found
+          }
+          return item
+        })
       }
     case LOAD_FAIL:
       return {

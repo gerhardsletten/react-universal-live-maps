@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
 import {asyncConnect} from 'redux-async-connect'
-import {Link} from 'react-router'
 import Helmet from 'react-helmet'
+import {MapListItem} from 'components'
 import {isLoaded, load as loadMaps} from 'redux/modules/maps'
 import style from './style.css'
 
@@ -17,9 +17,7 @@ import style from './style.css'
 }])
 @connect(
   (state) => ({
-    maps: state.maps.items,
-    error: state.maps.error,
-    loading: state.maps.loading
+    maps: state.maps.items
   })
 )
 export default class MapList extends Component {
@@ -33,15 +31,11 @@ export default class MapList extends Component {
       <div className={style.container}>
         <Helmet title='Maps'/>
         <h1>Maps</h1>
-        <ul>
-          {maps.map((item, i) => {
-            return (
-              <li key={i}>
-                <Link to={`/maps/${item._id}`}>{item.title}</Link>
-              </li>
-            )
-          })}
-        </ul>
+        {maps.map((item, i) => {
+          return (
+            <MapListItem key={i} item={item} />
+          )
+        })}
       </div>
     )
   }

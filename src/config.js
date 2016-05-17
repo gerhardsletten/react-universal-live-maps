@@ -20,6 +20,8 @@ module.exports = Object.assign({
   tokenSecret: process.env.TOKEN_SECRET || 'supersecret',
   username: process.env.USERNAME || 'admin',
   password: process.env.PASSWORD || 'secret',
+  dateFormatAPI: 'YYYY-MM-DDTHH:mm:ss.SSSZZ',
+  dateFormatUI: 'DD. MMM HH:mm',
   app: {
     title: 'Livemaps',
     description: 'En beskrivelse',

@@ -5,8 +5,10 @@ import Helmet from 'react-helmet'
 import {Link} from 'react-router'
 import {isLoaded, load as loadMaps, add as addMap, edit as editMap, remove} from 'redux/modules/maps'
 import omit from 'object.omit'
+import config from 'config'
 import moment from 'moment'
 import DateTime from 'react-datetime'
+import {MapListItem} from 'components'
 import featureDefault from './featureDefault.json'
 import style from './style.css'
 
@@ -52,10 +54,10 @@ export default class Admin extends Component {
     event.preventDefault()
     let {item} = this.state
     if (item.date) {
-      item.date = moment(item.date).format('YYYY-MM-DDTHH:mm:ss.SSSZZ')
+      item.date = moment(item.date).format(config.dateFormatAPI)
     }
     if (item.date_end) {
-      item.date_end = moment(item.date_end).format('YYYY-MM-DDTHH:mm:ss.SSSZZ')
+      item.date_end = moment(item.date_end).format(config.dateFormatAPI)
     }
     const action = (item._id) ? this.props.editMap(item._id, item) : this.props.addMap(item)
     action.then(() => {
@@ -85,8 +87,8 @@ export default class Admin extends Component {
     })
   }
 
-  handleRemove = (id) => {
-    this.props.remove(id)
+  handleRemove = (item) => {
+    this.props.remove(item._id)
   }
 
   handleEdit = (item) => {
@@ -158,17 +160,11 @@ export default class Admin extends Component {
             <p>
               <button onClick={this.handleNew.bind(this)}>New map</button>
             </p>
-            <ul>
-              {maps.map((item, i) => {
-                return (
-                  <li key={i}>
-                    <Link to={`/maps/${item._id}`}>{item.title}</Link> {moment(item.date).format('DD. MMM HH:mm')}
-                    <button onClick={this.handleEdit.bind(this, item)}>Edit</button>
-                    <button onClick={this.handleRemove.bind(this, item._id)}>Remove</button>
-                  </li>
-                )
-              })}
-            </ul>
+            {maps.map((item, i) => {
+              return (
+                <MapListItem key={i} item={item} editAction={this.handleEdit} removeAction={this.handleRemove} />
+              )
+            })}
           </div>
         )}
         {showForm && this.renderForm()}
