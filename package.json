@@ -127,7 +127,7 @@
     "mongoose": "^4.4.14",
     "mongoose-geojson-schema": "^2.1.0",
     "object.omit": "^2.0.0",
-    "piping": "^0.3.0",
+    "piping": "0.3.0",
     "postcss-loader": "^0.8.2",
     "pretty-error": "^1.2.0",
     "react": "^0.14.8",
