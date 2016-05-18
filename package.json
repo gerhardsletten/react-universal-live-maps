@@ -90,6 +90,7 @@
     }
   },
   "dependencies": {
+    "agenda": "^0.8.1",
     "autoprefixer": "^6.3.6",
     "babel-core": "^6.5.2",
     "babel-loader": "^6.2.1",
@@ -124,6 +125,7 @@
     "lru-memoize": "^1.0.0",
     "map-props": "^1.0.0",
     "moment": "^2.13.0",
+    "moment-timezone": "^0.5.4",
     "mongoose": "^4.4.14",
     "mongoose-geojson-schema": "^2.1.0",
     "object.omit": "^2.0.0",
@@ -153,7 +155,8 @@
     "turf": "^2.0.2",
     "url-loader": "^0.5.7",
     "webpack": "^1.12.9",
-    "webpack-isomorphic-tools": "^2.2.18"
+    "webpack-isomorphic-tools": "^2.2.18",
+    "xml2json": "^0.9.1"
   },
   "devDependencies": {
     "babel-eslint": "^5.0.0-beta6",

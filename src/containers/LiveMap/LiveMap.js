@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {asyncConnect} from 'redux-async-connect'
 import Helmet from 'react-helmet'
 import turf from 'turf'
+import io from 'socket.io-client'
 import {isLoaded, load} from 'redux/modules/live'
 import {toGeoJSON, svgSymbol, pointToLngLat, arrayExplode} from 'helpers/MapHelpers'
 import {MapCanvas} from 'components'
@@ -29,25 +30,23 @@ export default class LiveMap extends Component {
 
   componentDidMount () {
     const {course} = this.props.map
-    if (course.coordinates) {
-      this.setState({
-        lead: course.coordinates[Math.floor(course.coordinates.length / 2)],
-        group: course.coordinates[Math.floor(course.coordinates.length / 3)]
-      })
-    }
     if (__CLIENT__) {
-      console.log('Socket')
+      this.socket = io('', {path: '/ws'});
+      this.socket.on('update', this.socketListener)
     }
-
   }
 
-  socketListener = (message) => {
-    console.log('socketListener', message)
+  socketListener = (liveupdate) => {
+    console.log('socketListener', liveupdate)
+    this.setState({
+      lead: liveupdate.lead,
+      group: liveupdate.group
+    })
   }
 
   componentWillUnmount () {
-    if (this.client) {
-      
+    if (this.socket) {
+      this.socket.disconnect()
     }
   }
 
@@ -56,12 +55,16 @@ export default class LiveMap extends Component {
     const {lead, group} = this.state
     const activeMarkers = []
     let leadElapsed, groupElapsed
+    let message = 'Awaiting updates..'
     if (lead) {
       activeMarkers.push({
         position: lead,
         icon: 'lead'
       })
       leadElapsed = this.getElapsed(course.coordinates, lead)
+      if (leadElapsed > 0) {
+        message = `Lead: ${this.formatDistance(leadElapsed)}`
+      }
     }
     if (group) {
       activeMarkers.push({
@@ -69,7 +72,14 @@ export default class LiveMap extends Component {
         icon: 'group'
       })
       groupElapsed = this.getElapsed(course.coordinates, group)
+      if (leadElapsed > 0 && groupElapsed > 0) {
+        message += `, Group: ${this.formatDistance(Math.abs(leadElapsed - groupElapsed))} behind`
+      }
     }
+    if (leadElapsed > 0 || groupElapsed > 0) {
+      message = 'GPS units not within track'
+    }
+
     return (
       <div className={style.container}>
         <Helmet title={title} />
@@ -90,12 +100,7 @@ export default class LiveMap extends Component {
         <div className={style.bar}>
           <strong className={style.live}>LIVE</strong>
           <strong className={style.title}>{title}</strong>{' '}
-          {leadElapsed && (
-            <span>Lead: {this.formatDistance(leadElapsed)}{' '}</span>
-          )}
-          {group && (
-            <span>Group: {this.formatDistance(Math.abs(leadElapsed - groupElapsed))} behind{' '}</span>
-          )}
+          {message}
         </div>
       </div>
     )

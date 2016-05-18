@@ -20,6 +20,12 @@ module.exports = Object.assign({
   tokenSecret: process.env.TOKEN_SECRET || 'supersecret',
   username: process.env.USERNAME || 'admin',
   password: process.env.PASSWORD || 'secret',
+  live: {
+    url: process.env.LIVEURL || 'http://domain.com/lastgpsposition.xml',
+    lead: process.env.LIVELEADID || '3',
+    group: process.env.LIVEGROUPID || '4',
+    interval: process.env.LIVEUPDATE || '15 seconds'
+  },
   dateFormatAPI: 'YYYY-MM-DDTHH:mm:ss.SSSZZ',
   dateFormatUI: 'DD. MMM HH:mm',
   app: {

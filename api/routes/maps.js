@@ -3,7 +3,9 @@ import {jsdom} from 'jsdom'
 import http from 'http'
 import concat from 'concat-stream'
 import Map from '../models/Map'
-import moment from 'moment'
+import moment from 'moment-timezone'
+import config from '../../src/config'
+const parser = require('xml2json')
 
 function readAll (req, res) {
   Map
@@ -14,25 +16,31 @@ function readAll (req, res) {
   .then((maps) => res.json(maps))
 }
 
-function liveAll (req, res) {
-  Map
-  .find({
-    date_end: {
-      $gte: new Date()
-    }
+function findLiveEvents () {
+  return new Promise((resolve, reject) => {
+    Map
+    .find({
+      date: {
+        $lte: moment().tz("Europe/Oslo").utc().toDate()
+      },
+      date_end: {
+        $gte: moment().tz("Europe/Oslo").utc().toDate()
+      }
+    })
+    .sort('date')
+    .limit(1)
+    .then((doc) => {
+      resolve(doc)
+    })
   })
-  .select('title url date date_end features')
-  .sort('date')
-  .limit(1)
-  .exec()
-  .then((maps) => res.json(maps))
 }
 
 function live (req, res) {
+  console.log('debug date', new Date(), moment().tz("Europe/Oslo").utc().toDate())
   Map
   .findOne({
     date_end: {
-      $gte: new Date()
+      $gte: moment().tz("Europe/Oslo").utc().toDate()
     }
   })
   .sort('date')
@@ -52,6 +60,21 @@ function readOne (req, res) {
   })
   .catch((err) => {
     res.status(403).json(err)
+  })
+}
+
+function fetchLiveUpdate (url) {
+  return new Promise((resolve, reject) => {
+    http.get(url, (resp) => {
+      resp.on('error', (err) => reject(err))
+      resp.pipe(concat((buffer) => {
+        const raw = JSON.parse(parser.toJson(buffer.toString()))
+        if (raw.GPS && raw.GPS.Unit) {
+          return resolve(raw.GPS.Unit)
+        }
+        return reject()
+      }))
+    })
   })
 }
 
@@ -160,7 +183,9 @@ const Maps = {
   readOne,
   edit,
   create,
-  remove
+  remove,
+  findLiveEvents,
+  fetchLiveUpdate
 }
 
 export default Maps
