@@ -78,7 +78,7 @@ export default class LiveMap extends Component {
         message += `, Group: ${this.formatDistance(Math.abs(leadElapsed - groupElapsed))} behind`
       }
     }
-    if (leadElapsed > 0 || groupElapsed > 0) {
+    if (leadElapsed <= 0 || groupElapsed <= 0) {
       message = 'GPS units not within track'
     }
 
