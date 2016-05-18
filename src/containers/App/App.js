@@ -4,6 +4,8 @@ import {asyncConnect} from 'redux-async-connect'
 import {Link} from 'react-router'
 import {isLoaded as isAuthLoaded, load as loadAuth, logout} from 'redux/modules/auth'
 import {push} from 'react-router-redux'
+import ga from 'react-ga'
+import config from 'config'
 import style from './style.css'
 
 @asyncConnect([{
@@ -40,11 +42,19 @@ export default class App extends Component {
     this.props.logout()
   }
 
+  componentDidMount() {
+    ga.initialize(config.analytics, { debug: false });
+    ga.pageview(this.props.location.pathname);
+  }
+
   componentWillReceiveProps (nextProps) {
     if (!this.props.user && nextProps.user) {
       this.props.pushState('/admin')
     } else if (this.props.user && !nextProps.user) {
       this.props.pushState('/')
+    }
+    if (nextProps.location.pathname !== this.props.location.pathname) {
+      ga.pageview(nextProps.location.pathname);
     }
   }
 

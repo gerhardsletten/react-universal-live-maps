@@ -20,6 +20,7 @@ module.exports = Object.assign({
   tokenSecret: process.env.TOKEN_SECRET || 'supersecret',
   username: process.env.USERNAME || 'admin',
   password: process.env.PASSWORD || 'secret',
+  analytics: process.env.ANALYTICS || 'UA-46727144-10',
   live: {
     url: process.env.LIVEURL || 'http://domain.com/lastgpsposition.xml',
     lead: process.env.LIVELEADID || '3',
