@@ -37,7 +37,9 @@ export default class LiveMap extends Component {
   }
 
   socketListener = (liveupdate) => {
-    console.log('socketListener', liveupdate)
+    if (console && console.log) {
+      console.log('ws update', liveupdate)
+    }
     this.setState({
       lead: liveupdate.lead,
       group: liveupdate.group
