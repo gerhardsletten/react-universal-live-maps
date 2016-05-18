@@ -36,7 +36,6 @@ function findLiveEvents () {
 }
 
 function live (req, res) {
-  console.log('debug date', new Date(), moment().tz("Europe/Oslo").utc().toDate())
   Map
   .findOne({
     date_end: {
@@ -133,7 +132,6 @@ function handleFields (fields, required = ['title'], upload = false) {
 function create (req, res) {
   handleFields(req.body, ['title', 'url'], true)
   .then((fields) => {
-    console.log('create', Object.keys(fields))
     const doc = new Map(fields)
     doc.save((nada) => {
       res.json(doc)
@@ -149,7 +147,6 @@ function edit (req, res) {
   .then((doc) => {
     return handleFields(req.body, ['title'], doc.url !== req.body.url)
     .then((fields) => {
-      console.log('edit', Object.keys(fields))
       for (let key in fields) {
         if (fields.hasOwnProperty(key)) {
           doc[key] = fields[key]

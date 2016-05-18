@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 import http from 'http'
 import SocketIo from 'socket.io'
 import Agenda from 'agenda'
+import Settings from './models/Settings'
 import {
   User,
   Maps
@@ -20,28 +21,40 @@ const MongoStore = require('connect-mongo')(session)
 const server = new http.Server(app)
 const io = new SocketIo(server)
 io.path('/ws')
-const connections = []
+const sessionDBKey = 'socket-connections'
+
+Settings.findOne({key: sessionDBKey}).then((doc) => {
+  if (!doc) {
+    const doc = new Settings({key: sessionDBKey, numberValue: 0})
+    doc.save((nada) => {
+      console.log('created db')
+    })
+  } else {
+    doc.numberValue = 0
+    doc.save()
+  }
+})
 
 agenda.define('broadcast', function(job, done) {
   Maps.findLiveEvents().then((docs) => {
     if (docs.length > 0) {
       Maps.fetchLiveUpdate(config.live.url).then((data) => {
-        if (data.length > 1) {
-          const leadData = data.find((item) => item.gpsID === config.live.lead)
-          const groupData = data.find((item) => item.gpsID === config.live.group)
-          const obj = {
-            listners: connections.length
+        Settings.findOne({key: sessionDBKey}).then((doc) => {
+          if (data.length > 1) {
+            const leadData = data.find((item) => item.gpsID === config.live.lead)
+            const groupData = data.find((item) => item.gpsID === config.live.group)
+            const obj = {
+              listners: doc.numberValue
+            }
+            if (leadData) {
+              obj.lead = [parseFloat(leadData.X), parseFloat(leadData.Y)]
+            }
+            if (groupData) {
+              obj.group = [parseFloat(groupData.X), parseFloat(groupData.Y)]
+            }
+            io.sockets.emit('update', obj)
           }
-          if (leadData) {
-            obj.lead = [parseFloat(leadData.X), parseFloat(leadData.Y)]
-          }
-          if (groupData) {
-            obj.group = [parseFloat(groupData.X), parseFloat(groupData.Y)]
-          }
-          connections.forEach((connection) => {
-            connection.emit('update', obj);
-          })
-        }
+        })
       })
     }
   })
@@ -83,10 +96,15 @@ if (config.apiPort) {
     console.info('==> 💻  Send requests to http://%s:%s', config.apiHost, config.apiPort)
   })
   io.on('connection', (socket) => {
-    connections.push(socket)
+    Settings.findOne({key: sessionDBKey}).then((doc) => {
+      doc.numberValue = doc.numberValue + 1
+      doc.save()
+    })
     socket.on('disconnect', () => {
-      const index = connections.indexOf(socket)
-      connections.splice(index, 1)
+      Settings.findOne({key: sessionDBKey}).then((doc) => {
+        doc.numberValue = doc.numberValue - 1
+        doc.save()
+      })
     })
   })
   io.listen(runnable)
