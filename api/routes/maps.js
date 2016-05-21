@@ -8,7 +8,7 @@ import config from '../../src/config'
 const parser = require('xml2json')
 
 const CACHE_KEY = 'liveCache'
-var cache = require('lazyCache')(1000 * 30)
+var cache = require('lazycache')(1000 * 30)
 
 function readAll (req, res) {
   Map
