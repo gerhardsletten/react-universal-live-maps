@@ -60,7 +60,7 @@ export default class LiveMap extends Component {
     let leadElapsed, groupElapsed
     let message
     if (moment().isBefore(date)) {
-      message = `Starts sending in ${moment(date).format('ddd DD. MMM h:mm:ss')}`
+      message = `Starts sending in ${moment(date).format('ddd DD. MMM HH:mm:ss')}`
     } else {
       if (lead) {
         activeMarkers.push({
