@@ -70,7 +70,6 @@ function readOne (req, res) {
 
 function fetchLivePosition (cached = false) {
   if (cached && cache.get(CACHE_KEY)) {
-    console.log('cached', cache.get(CACHE_KEY))
     return Promise.resolve(cache.get(CACHE_KEY))
   }
   return new Promise((resolve, reject) => {
