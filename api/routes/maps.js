@@ -7,6 +7,9 @@ import moment from 'moment-timezone'
 import config from '../../src/config'
 const parser = require('xml2json')
 
+const CACHE_KEY = 'liveCache'
+var cache = require('lazyCache')(1000 * 30)
+
 function readAll (req, res) {
   Map
   .find({})
@@ -36,15 +39,18 @@ function findLiveEvents () {
 }
 
 function live (req, res) {
-  Map
-  .findOne({
-    date_end: {
-      $gte: moment().tz("Europe/Oslo").utc().toDate()
-    }
-  })
-  .sort('date')
-  .then((doc) => {
-    res.json(doc)
+  Promise.all([
+    Map
+    .findOne({
+      date_end: {
+        $gte: moment().tz("Europe/Oslo").utc().toDate()
+      }
+    })
+    .sort('date')
+    .lean(),
+    fetchLivePosition(true)
+  ]).then((promises) => {
+    res.json({...promises[0], live: promises[1]})
   })
   .catch((err) => {
     res.status(403).json(err)
@@ -62,14 +68,28 @@ function readOne (req, res) {
   })
 }
 
-function fetchLiveUpdate (url) {
+function fetchLivePosition (cached = false) {
+  if (cached && cache.get(CACHE_KEY)) {
+    console.log('cached', cache.get(CACHE_KEY))
+    return Promise.resolve(cache.get(CACHE_KEY))
+  }
   return new Promise((resolve, reject) => {
-    http.get(url, (resp) => {
+    http.get(config.live.url, (resp) => {
       resp.on('error', (err) => reject(err))
       resp.pipe(concat((buffer) => {
         const raw = JSON.parse(parser.toJson(buffer.toString()))
-        if (raw.GPS && raw.GPS.Unit) {
-          return resolve(raw.GPS.Unit)
+        if (raw.GPS && raw.GPS.Unit && raw.GPS.Unit.length > 1) {
+          const leadData = raw.GPS.Unit.find((item) => item.gpsID === config.live.lead)
+          const groupData = raw.GPS.Unit.find((item) => item.gpsID === config.live.group)
+          const obj = {}
+          if (leadData) {
+            obj.lead = [parseFloat(leadData.X), parseFloat(leadData.Y)]
+          }
+          if (groupData) {
+            obj.group = [parseFloat(groupData.X), parseFloat(groupData.Y)]
+          }
+          cache.set(CACHE_KEY, obj)
+          return resolve(obj)
         }
         return reject()
       }))
@@ -182,7 +202,7 @@ const Maps = {
   create,
   remove,
   findLiveEvents,
-  fetchLiveUpdate
+  fetchLivePosition
 }
 
 export default Maps

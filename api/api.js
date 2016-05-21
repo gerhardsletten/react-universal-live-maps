@@ -38,22 +38,9 @@ Settings.findOne({key: sessionDBKey}).then((doc) => {
 agenda.define('broadcast', function(job, done) {
   Maps.findLiveEvents().then((docs) => {
     if (docs.length > 0) {
-      Maps.fetchLiveUpdate(config.live.url).then((data) => {
+      Maps.fetchLivePosition().then((data) => {
         Settings.findOne({key: sessionDBKey}).then((doc) => {
-          if (data.length > 1) {
-            const leadData = data.find((item) => item.gpsID === config.live.lead)
-            const groupData = data.find((item) => item.gpsID === config.live.group)
-            const obj = {
-              listners: doc.numberValue
-            }
-            if (leadData) {
-              obj.lead = [parseFloat(leadData.X), parseFloat(leadData.Y)]
-            }
-            if (groupData) {
-              obj.group = [parseFloat(groupData.X), parseFloat(groupData.Y)]
-            }
-            io.sockets.emit('update', obj)
-          }
+          io.sockets.emit('update', {listners: doc.numberValue, ...data})
         })
       })
     }

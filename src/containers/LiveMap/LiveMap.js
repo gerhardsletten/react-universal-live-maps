@@ -4,7 +4,8 @@ import {asyncConnect} from 'redux-async-connect'
 import Helmet from 'react-helmet'
 import turf from 'turf'
 import io from 'socket.io-client'
-import {isLoaded, load} from 'redux/modules/live'
+import moment from 'moment'
+import {isLoaded, load, updateLive} from 'redux/modules/live'
 import {toGeoJSON, svgSymbol, pointToLngLat, arrayExplode} from 'helpers/MapHelpers'
 import {MapCanvas} from 'components'
 import style from './style.css'
@@ -22,7 +23,8 @@ import style from './style.css'
   (state, ownProps) => ({
     map: state.live.item,
     error: state.live.error
-  })
+  }),
+  {updateLive}
 )
 export default class LiveMap extends Component {
 
@@ -40,7 +42,7 @@ export default class LiveMap extends Component {
     if (console && console.log) {
       console.log('ws update', liveupdate)
     }
-    this.setState({
+    this.props.updateLive({
       lead: liveupdate.lead,
       group: liveupdate.group
     })
@@ -53,35 +55,37 @@ export default class LiveMap extends Component {
   }
 
   render () {
-    const {title, course, features} = this.props.map
-    const {lead, group} = this.state
+    const {title, course, date, features, live: {lead, group}} = this.props.map
     const activeMarkers = []
     let leadElapsed, groupElapsed
-    let message = 'Awaiting updates..'
-    if (lead) {
-      activeMarkers.push({
-        position: lead,
-        icon: 'lead'
-      })
-      leadElapsed = this.getElapsed(course.coordinates, lead)
-      if (leadElapsed > 0) {
-        message = `Lead: ${this.formatDistance(leadElapsed)}`
+    let message
+    if (moment().isBefore(date)) {
+      message = `Starts sending in ${moment(date).format('ddd DD. MMM h:mm:ss')}`
+    } else {
+      if (lead) {
+        activeMarkers.push({
+          position: lead,
+          icon: 'lead'
+        })
+        leadElapsed = this.getElapsed(course.coordinates, lead)
+        if (leadElapsed > 0) {
+          message = `Lead: ${this.formatDistance(leadElapsed)}`
+        }
+      }
+      if (group) {
+        activeMarkers.push({
+          position: group,
+          icon: 'group'
+        })
+        groupElapsed = this.getElapsed(course.coordinates, group)
+        if (leadElapsed > 0 && groupElapsed > 0) {
+          message += `, Group: ${this.formatDistance(Math.abs(leadElapsed - groupElapsed))} behind`
+        }
+      }
+      if (leadElapsed <= 0 || groupElapsed <= 0) {
+        message = 'GPS units not within track'
       }
     }
-    if (group) {
-      activeMarkers.push({
-        position: group,
-        icon: 'group'
-      })
-      groupElapsed = this.getElapsed(course.coordinates, group)
-      if (leadElapsed > 0 && groupElapsed > 0) {
-        message += `, Group: ${this.formatDistance(Math.abs(leadElapsed - groupElapsed))} behind`
-      }
-    }
-    if (leadElapsed <= 0 || groupElapsed <= 0) {
-      message = 'GPS units not within track'
-    }
-
     return (
       <div className={style.container}>
         <Helmet title={title} />

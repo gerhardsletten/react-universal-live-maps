@@ -122,6 +122,7 @@
     "jsdom": "^9.0.0",
     "json-loader": "^0.5.4",
     "jsonwebtoken": "^6.2.0",
+    "lazycache": "0.0.2",
     "lru-memoize": "^1.0.0",
     "map-props": "^1.0.0",
     "moment": "^2.13.0",
