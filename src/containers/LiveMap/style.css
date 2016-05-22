@@ -35,6 +35,9 @@
   margin-right: 15px;
   color: #000;
 }
+.notfound {
+  padding: 2em;
+}
 
 @media screen and (max-width: 600px) {
   .title {

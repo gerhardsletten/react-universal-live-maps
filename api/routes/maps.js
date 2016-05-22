@@ -50,7 +50,10 @@ function live (req, res) {
     .lean(),
     fetchLivePosition(true)
   ]).then((promises) => {
-    res.json({...promises[0], live: promises[1]})
+    if (promises[0]) {
+      return res.json({...promises[0], live: promises[1]})
+    }
+    res.status(404).json('No upcoming live-event')
   })
   .catch((err) => {
     res.status(403).json(err)

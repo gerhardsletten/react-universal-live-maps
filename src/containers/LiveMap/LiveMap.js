@@ -55,6 +55,17 @@ export default class LiveMap extends Component {
   }
 
   render () {
+    const {error} = this.props
+    if (error) {
+      return (
+        <div className={style.container}>
+          <Helmet title={error} />
+          <div className={style.notfound}>
+            <h1>{error}</h1>
+          </div>
+        </div>
+      )
+    }
     const {title, course, date, features, live: {lead, group}} = this.props.map
     const activeMarkers = []
     let leadElapsed, groupElapsed
