@@ -1,4 +1,4 @@
-require('babel-polyfill')
+import process from 'process'
 
 const environment = {
   development: {

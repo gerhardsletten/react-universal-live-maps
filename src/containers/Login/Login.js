@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
 import Helmet from 'react-helmet'
-import {login} from 'redux/modules/auth'
+
+import {login} from '../../redux/modules/auth'
 
 @connect(
   (state) => ({
@@ -36,7 +37,7 @@ export default class Login extends Component {
     const {user} = this.props
     return (
       <form onSubmit={this.handleSubmit}>
-        <Helmet title='Login'/>
+        <Helmet title='Login' />
         {!user && (
           <p>
             <input type='text' value={this.state.username} onChange={this.handleChange.bind(this, 'username')} placeholder='Username' />

@@ -1,19 +1,27 @@
 import React, {Component, PropTypes} from 'react'
 import {GoogleMapLoader, GoogleMap, Polyline, Marker} from 'react-google-maps'
-import style from './style.css'
+import styled from 'styled-components'
+
 import mapStyle from './mapstyle.json'
-import {toGeoJSON, svgSymbol, pointToLngLat, arrayExplode} from 'helpers/MapHelpers'
-import turf from 'turf'
+import {svgSymbol, pointToLngLat, arrayExplode} from '../../helpers/MapHelpers'
 
 const icons = {
-  first: require('./icons/start.svg'),
-  last: require('./icons/end.svg'),
-  sprint: require('./icons/sprint.svg'),
-  com: require('./icons/com.svg'),
-  food: require('./icons/food.svg'),
-  lead: require('./icons/lead.svg'),
-  group: require('./icons/group.svg'),
+  first: '/icons/start.svg',
+  last: '/icons/end.svg',
+  sprint: '/icons/sprint.svg',
+  com: '/icons/com.svg',
+  food: '/icons/food.svg',
+  lead: '/icons/lead.svg',
+  group: '/icons/group.svg'
 }
+
+const Container = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`
 
 export default class MapCanvas extends Component {
   static propTypes = {
@@ -43,10 +51,10 @@ export default class MapCanvas extends Component {
     const {course, markers, activeMarkers} = this.props
     const {first, last} = arrayExplode(course)
     return (
-      <div className={style.container}>
+      <Container>
         <GoogleMapLoader
           containerElement={
-            <div {...this.props} style={{height: '100%'}}/>
+            <div style={{height: '100%'}} />
           }
           googleMapElement={
             <GoogleMap
@@ -70,7 +78,7 @@ export default class MapCanvas extends Component {
             </GoogleMap>
           }
         />
-      </div>
+      </Container>
     )
   }
 

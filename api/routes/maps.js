@@ -1,4 +1,4 @@
-import togeojson from 'togeojson'
+import togeojson from '@mapbox/togeojson'
 import {jsdom} from 'jsdom'
 import http from 'http'
 import concat from 'concat-stream'
@@ -43,15 +43,15 @@ function live (req, res) {
     Map
     .findOne({
       date_end: {
-        $gte: moment().tz("Europe/Oslo").utc().toDate()
+        $gte: moment().tz('Europe/Oslo').utc().toDate()
       }
     })
     .sort('date')
     .lean(),
     fetchLivePosition(true)
-  ]).then((promises) => {
-    if (promises[0]) {
-      return res.json({...promises[0], live: promises[1]})
+  ]).then(([map, live]) => {
+    if (map) {
+      return res.json({...map, live})
     }
     res.status(404).json('No upcoming live-event')
   })
@@ -93,7 +93,7 @@ function fetchLivePosition (cached = false) {
           cache.set(CACHE_KEY, obj)
           return resolve(obj)
         }
-        return reject()
+        return resolve()
       }))
     })
   })

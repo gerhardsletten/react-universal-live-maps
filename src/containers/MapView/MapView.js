@@ -1,11 +1,19 @@
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {asyncConnect} from 'redux-async-connect'
+import {asyncConnect} from 'redux-connect'
 import Helmet from 'react-helmet'
-import {isLoaded, loadOne} from 'redux/modules/maps'
-import {MapCanvas} from 'components'
-import style from './style.css'
+import styled from 'styled-components'
 
+import {isLoaded, loadOne} from '../../redux/modules/maps'
+import {MapCanvas} from '../../components'
+
+const Container = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`
 
 @asyncConnect([{
   promise: ({
@@ -29,10 +37,10 @@ export default class MapView extends Component {
   render () {
     const {title, course, features} = this.props.map
     return (
-      <div className={style.container}>
+      <Container>
         <Helmet title={title} />
         {course.coordinates && (
-          <MapCanvas 
+          <MapCanvas
             course={course.coordinates}
             markers={features.features ? features.features.map((feature) => {
               return {
@@ -42,7 +50,7 @@ export default class MapView extends Component {
             }) : []}
           />
         )}
-      </div>
+      </Container>
     )
   }
 }

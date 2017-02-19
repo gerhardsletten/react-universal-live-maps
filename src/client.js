@@ -1,49 +1,27 @@
-import 'babel-polyfill'
+import process from 'process'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import {browserHistory} from 'react-router'
+import {syncHistoryWithStore} from 'react-router-redux'
+
+import Root from './Root'
 import createStore from './redux/create'
 import ApiClient from './helpers/ApiClient'
-import {Provider} from 'react-redux'
-import {Router, browserHistory} from 'react-router'
-import {syncHistoryWithStore} from 'react-router-redux'
-import {ReduxAsyncConnect} from 'redux-async-connect'
-import getRoutes from './routes'
+
+global.__CLIENT__ = true
+global.__SERVER__ = false
+global.__DEVELOPMENT__ = process.env.NODE_ENV !== 'production'
 
 const client = new ApiClient()
 const dest = document.getElementById('content')
-const store = createStore(browserHistory, client, window.__data)
-const history = syncHistoryWithStore(browserHistory, store)
+window.store = window.store || createStore(browserHistory, client, window.__data)
+const history = syncHistoryWithStore(browserHistory, window.store)
 
-const component = (
-  <Router render={(props) =>
-    <ReduxAsyncConnect {...props} helpers={{client}} filter={(item) => !item.deferred} />
-      } history={history}>
-    {getRoutes(store)}
-  </Router>
-)
+render(Root)
 
-ReactDOM.render(
-  <Provider store={store} key='provider'>
-    {component}
-  </Provider>,
-  dest
-)
-
-if (process.env.NODE_ENV !== 'production') {
-  window.React = React // enable debugger
-
-  if (!dest || !dest.firstChild || !dest.firstChild.attributes || !dest.firstChild.attributes['data-react-checksum']) {
-    console.error('Server-side React render was discarded. Make sure that your initial render does not contain any client-side code.')
-  }
-}
-
-if (!window.devToolsExtension) {
+function render (RootElement) {
   ReactDOM.render(
-    <Provider store={store} key='provider'>
-      <div>
-        {component}
-      </div>
-    </Provider>,
+    <RootElement store={window.store} client={client} history={history} />,
     dest
   )
 }

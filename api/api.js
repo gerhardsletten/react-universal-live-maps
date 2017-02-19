@@ -7,10 +7,9 @@ import http from 'http'
 import SocketIo from 'socket.io'
 import Agenda from 'agenda'
 import Settings from './models/Settings'
-import {
-  User,
-  Maps
-} from './routes'
+import {User, Maps} from './routes'
+
+mongoose.Promise = global.Promise
 
 mongoose.connect(config.databaseUri)
 const agenda = new Agenda({db: {address: config.databaseUri}})
@@ -35,7 +34,7 @@ Settings.findOne({key: sessionDBKey}).then((doc) => {
   }
 })
 
-agenda.define('broadcast', function(job, done) {
+agenda.define('broadcast', function (job, done) {
   Maps.findLiveEvents().then((docs) => {
     if (docs.length > 0) {
       Maps.fetchLivePosition().then((data) => {

@@ -1,16 +1,49 @@
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
-import {asyncConnect} from 'redux-async-connect'
+import {asyncConnect} from 'redux-connect'
 import Helmet from 'react-helmet'
-import {Link} from 'react-router'
-import {isLoaded, load as loadMaps, add as addMap, edit as editMap, remove} from 'redux/modules/maps'
 import omit from 'object.omit'
-import config from 'config'
 import moment from 'moment'
 import DateTime from 'react-datetime'
-import {MapListItem} from 'components'
+import styled from 'styled-components'
+
+import {isLoaded, load as loadMaps, add as addMap, edit as editMap, remove} from '../../redux/modules/maps'
+import config from '../../config'
+import {MapListItem} from '../../components'
 import featureDefault from './featureDefault.json'
-import style from './style.css'
+
+const Container = styled.div`
+  padding: 40px;
+`
+
+const Input = styled.input`
+  display: block;
+  margin: 3px;
+  padding: 5px;
+  width: 100%;
+`
+
+const TextArea = styled.textarea`
+  display: block;
+  margin: 3px;
+  padding: 5px;
+  width: 100%;
+  min-height: 400px;
+`
+
+const Button = styled.button`
+  display: inline-block;
+  margin: 3px;
+`
+
+const Block = styled.div`
+  margin-bottom: 1em;
+  max-width: 600px;
+`
+
+const Label = styled.label`
+  display: block;
+`
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -116,28 +149,28 @@ export default class Admin extends Component {
         {error && (
           <p style={{color: 'red'}}>{error}</p>
         )}
-        <div className={style.block}>
-          <label>Title</label>
-          <input type='text' value={item.title} onChange={this.handleChange.bind(this, 'title')} placeholder='Map title' />
-        </div>
-        <div className={style.block}>
-          <label>Event start</label>
+        <Block>
+          <Label>Title</Label>
+          <Input type='text' value={item.title} onChange={this.handleChange.bind(this, 'title')} placeholder='Map title' />
+        </Block>
+        <Block>
+          <Label>Event start</Label>
           <DateTime value={item.date} dateFormat='DD. MMM YYYY' timeFormat='HH:mm:ss' onChange={this.handleChangeDate.bind(this, 'date')} />
-        </div>
-        <div className={style.block}>
-          <label>Event end</label>
+        </Block>
+        <Block>
+          <Label>Event end</Label>
           <DateTime value={item.date_end} dateFormat='DD. MMM YYYY' timeFormat='HH:mm:ss' onChange={this.handleChangeDate.bind(this, 'date_end')} />
-        </div>
-        <div className={style.block}>
-          <label>GeoJSON feature collection</label>
-          <textarea value={item.features} onChange={this.handleChange.bind(this, 'features')} placeholder={JSON.stringify(featureDefault)} />
-        </div>
-        <div className={style.block}>
-          <label>KML Url</label>
-          <input type='text' value={item.url} onChange={this.handleChange.bind(this, 'url')} placeholder='KML url' />
-          <button type='submit'>Save</button>
+        </Block>
+        <Block>
+          <Label>GeoJSON feature collection</Label>
+          <TextArea value={item.features} onChange={this.handleChange.bind(this, 'features')} placeholder={JSON.stringify(featureDefault)} />
+        </Block>
+        <Block>
+          <Label>KML Url</Label>
+          <Input type='text' value={item.url} onChange={this.handleChange.bind(this, 'url')} placeholder='KML url' />
+          <Button type='submit'>Save</Button>
           <span onClick={this.handleCancel.bind(this)}>Cancel</span>
-        </div>
+        </Block>
       </form>
     )
   }
@@ -146,8 +179,8 @@ export default class Admin extends Component {
     const {maps, error, loading} = this.props
     const {showForm} = this.state
     return (
-      <div className={style.container}>
-        <Helmet title='Admin'/>
+      <Container>
+        <Helmet title='Admin' />
         <h1>Admin {this.state.other}</h1>
         {error && (
           <p style={{color: 'red'}}>{error}</p>
@@ -168,7 +201,7 @@ export default class Admin extends Component {
           </div>
         )}
         {showForm && this.renderForm()}
-      </div>
+      </Container>
     )
   }
 }

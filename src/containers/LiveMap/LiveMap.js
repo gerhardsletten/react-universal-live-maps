@@ -1,14 +1,58 @@
-import React, {Component, PropTypes} from 'react'
+import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {asyncConnect} from 'redux-async-connect'
+import {asyncConnect} from 'redux-connect'
 import Helmet from 'react-helmet'
-import turf from 'turf'
+import PointOnLine from '@turf/point-on-line'
+import LineSlice from '@turf/line-slice'
+import LineDistance from '@turf/line-distance'
 import io from 'socket.io-client'
 import moment from 'moment'
-import {isLoaded, load, updateLive} from 'redux/modules/live'
-import {toGeoJSON, svgSymbol, pointToLngLat, arrayExplode} from 'helpers/MapHelpers'
-import {MapCanvas} from 'components'
-import style from './style.css'
+import styled from 'styled-components'
+
+import {isLoaded, load, updateLive} from '../../redux/modules/live'
+import {toGeoJSON} from '../../helpers/MapHelpers'
+import {MapCanvas} from '../../components'
+
+const Container = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`
+const Map = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 40px;
+`
+const Bar = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  line-height: 40px;
+  font-size: 11px;
+  white-space: nowrap;
+  text-overlfow: ellipsis;
+  overflow: hidden;
+`
+const Title = styled.strong`
+  color: #FFD634;
+  display: inline-block;
+  @media screen and (max-width: 600px) {
+    display: none;
+  }
+`
+const Live = styled.strong`
+  background: #FFD634;
+  float:left;
+  line-height: 40px; 
+  padding: 0 15px;
+  margin-right: 15px;
+  color: #000;
+`
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -31,9 +75,8 @@ export default class LiveMap extends Component {
   state = {}
 
   componentDidMount () {
-    const {course} = this.props.map
     if (__CLIENT__) {
-      this.socket = io('', {path: '/ws'});
+      this.socket = io('', {path: '/ws'})
       this.socket.on('update', this.socketListener)
     }
   }
@@ -58,12 +101,12 @@ export default class LiveMap extends Component {
     const {error} = this.props
     if (error) {
       return (
-        <div className={style.container}>
+        <Container>
           <Helmet title={error} />
-          <div className={style.notfound}>
+          <div>
             <h1>{error}</h1>
           </div>
-        </div>
+        </Container>
       )
     }
     const {title, course, date, features, live: {lead, group}} = this.props.map
@@ -98,11 +141,11 @@ export default class LiveMap extends Component {
       }
     }
     return (
-      <div className={style.container}>
+      <Container>
         <Helmet title={title} />
         {course.coordinates && (
-          <div className={style.map}>
-            <MapCanvas 
+          <Map>
+            <MapCanvas
               course={course.coordinates}
               markers={features.features ? features.features.map((feature) => {
                 return {
@@ -112,14 +155,14 @@ export default class LiveMap extends Component {
               }) : []}
               activeMarkers={activeMarkers}
             />
-          </div>
+          </Map>
         )}
-        <div className={style.bar}>
-          <strong className={style.live}>LIVE</strong>
-          <strong className={style.title}>{title}</strong>{' '}
+        <Bar>
+          <Live>LIVE</Live>
+          <Title>{title}</Title>{' '}
           {message}
-        </div>
-      </div>
+        </Bar>
+      </Container>
     )
   }
 
@@ -133,9 +176,9 @@ export default class LiveMap extends Component {
   getElapsed (coordinates, position) {
     const course = toGeoJSON(coordinates, 'LineString')
     const point = toGeoJSON(position)
-    const snapped = turf.pointOnLine(course, point)
-    const sliced = turf.lineSlice(toGeoJSON(coordinates[0]), snapped, course)
-    return turf.lineDistance(sliced, 'kilometers')
+    const snapped = PointOnLine(course, point)
+    const sliced = LineSlice(toGeoJSON(coordinates[0]), snapped, course)
+    return LineDistance(sliced, 'kilometers')
   }
 
 }

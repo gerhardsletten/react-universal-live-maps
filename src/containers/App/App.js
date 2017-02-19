@@ -1,12 +1,53 @@
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
-import {asyncConnect} from 'redux-async-connect'
+import {asyncConnect} from 'redux-connect'
 import {Link} from 'react-router'
-import {isLoaded as isAuthLoaded, load as loadAuth, logout} from 'redux/modules/auth'
 import {push} from 'react-router-redux'
 import ga from 'react-ga'
-import config from 'config'
-import style from './style.css'
+import styled, {injectGlobal} from 'styled-components'
+
+import {isLoaded as isAuthLoaded, load as loadAuth, logout} from '../../redux/modules/auth'
+import config from '../../config'
+
+injectGlobal`
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  html,
+  body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background: #333;
+    font-family: sans-serif;
+    color: #fff;
+  }
+  a {
+    color: #fff;
+  }
+  body > div {
+    height: 100%;
+  }
+  p {
+    margin-bottom: 10px;
+  }
+`
+
+const Container = styled.div`
+  height: 100%;
+`
+
+const UserBar = styled.div`
+  z-index: 100;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 10px;
+  color: #fff;
+  background: #333;
+  font-size: 12px;
+`
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -42,9 +83,9 @@ export default class App extends Component {
     this.props.logout()
   }
 
-  componentDidMount() {
-    ga.initialize(config.analytics, { debug: false });
-    ga.pageview(this.props.location.pathname);
+  componentDidMount () {
+    ga.initialize(config.analytics, { debug: false })
+    ga.pageview(this.props.location.pathname)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -54,19 +95,25 @@ export default class App extends Component {
       this.props.pushState('/')
     }
     if (nextProps.location.pathname !== this.props.location.pathname) {
-      ga.pageview(nextProps.location.pathname);
+      ga.pageview(nextProps.location.pathname)
     }
   }
 
   render () {
     const {user} = this.props
     return (
-      <div className={style.container}>
+      <Container>
         {user && (
-          <div className={style.userBar}><Link to='/'>Live</Link> <Link to='/maps'>Maps</Link> <Link to='/admin'>Admin</Link> Logged in as {user.username} <button onClick={this.handleLogout}>Logout</button></div>
+          <UserBar>
+            <Link to='/'>Live</Link>
+            <Link to='/maps'>Maps</Link>
+            <Link to='/admin'>Admin</Link>
+            Logged in as {user.username}
+            <button onClick={this.handleLogout}>Logout</button>
+          </UserBar>
         )}
         {this.props.children}
-      </div>
+      </Container>
     )
   }
 }

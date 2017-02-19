@@ -1,20 +1,27 @@
 import React, {Component, PropTypes} from 'react'
 import {Link} from 'react-router'
-import config from 'config'
+import styled from 'styled-components'
 import moment from 'moment'
-import style from './style.css'
+
+import config from '../../config'
+
+const Container = styled.div`
+  padding: 4px 8px;
+  margin-bottom: 10px;
+  border-left: 3px solid #999;
+`
 
 export default class MapListItem extends Component {
   static propTypes = {
     item: PropTypes.object.isRequired,
     editAction: PropTypes.func,
-    removeAction: PropTypes.func,
+    removeAction: PropTypes.func
   }
 
   render () {
     const {item, editAction, removeAction} = this.props
     return (
-      <div className={style.container}>
+      <Container>
         <Link to={`/maps/${item._id}`}>{item.title}</Link>
         {moment(item.date).format(config.dateFormatUI)} -
         {moment(item.date_end).format(config.dateFormatUI)}
@@ -24,7 +31,7 @@ export default class MapListItem extends Component {
         {removeAction && (
           <button onClick={removeAction.bind(this, item)}>Remove</button>
         )}
-      </div>
+      </Container>
     )
   }
 }
