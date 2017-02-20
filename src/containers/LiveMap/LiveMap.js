@@ -5,7 +5,6 @@ import Helmet from 'react-helmet'
 import PointOnLine from '@turf/point-on-line'
 import LineSlice from '@turf/line-slice'
 import LineDistance from '@turf/line-distance'
-import io from 'socket.io-client'
 import moment from 'moment'
 import styled from 'styled-components'
 
@@ -74,13 +73,6 @@ export default class LiveMap extends Component {
 
   state = {}
 
-  componentDidMount () {
-    if (__CLIENT__) {
-      this.socket = io('', {path: '/ws'})
-      this.socket.on('update', this.socketListener)
-    }
-  }
-
   socketListener = (liveupdate) => {
     if (console && console.log) {
       console.log('ws update', liveupdate)
@@ -89,12 +81,6 @@ export default class LiveMap extends Component {
       lead: liveupdate.lead,
       group: liveupdate.group
     })
-  }
-
-  componentWillUnmount () {
-    if (this.socket) {
-      this.socket.disconnect()
-    }
   }
 
   render () {
