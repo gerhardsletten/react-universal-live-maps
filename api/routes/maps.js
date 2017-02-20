@@ -53,7 +53,7 @@ function live (req, res) {
     if (map) {
       return res.json({...map, live})
     }
-    res.status(403).json('No upcoming live-event')
+    res.json(null)
   })
   .catch((err) => {
     res.status(403).json(err)
