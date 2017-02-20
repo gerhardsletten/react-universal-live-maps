@@ -1,6 +1,8 @@
 .idea/
 node_modules/
 dist/
+static/bundle.js
+static/sourcemaps.js.map
 *.iml
 webpack-assets.json
 webpack-stats.json

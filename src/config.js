@@ -22,7 +22,7 @@ module.exports = Object.assign({
   password: process.env.PASSWORD || 'secret',
   analytics: process.env.ANALYTICS || 'UA-46727144-10',
   live: {
-    url: process.env.LIVEURL || 'http://domain.com/lastgpsposition.xml',
+    url: process.env.LIVEURL || null,
     lead: process.env.LIVELEADID || '3',
     group: process.env.LIVEGROUPID || '4',
     interval: process.env.LIVEUPDATE || '15 seconds'

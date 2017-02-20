@@ -53,7 +53,7 @@ function live (req, res) {
     if (map) {
       return res.json({...map, live})
     }
-    res.status(404).json('No upcoming live-event')
+    res.status(403).json('No upcoming live-event')
   })
   .catch((err) => {
     res.status(403).json(err)
@@ -72,6 +72,9 @@ function readOne (req, res) {
 }
 
 function fetchLivePosition (cached = false) {
+  if (!config.live.url) {
+    return Promise.resolve(null)
+  }
   if (cached && cache.get(CACHE_KEY)) {
     return Promise.resolve(cache.get(CACHE_KEY))
   }

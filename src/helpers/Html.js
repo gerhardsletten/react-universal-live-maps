@@ -27,7 +27,7 @@ export default class Html extends Component {
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <link rel='shortcut icon' href='/favicon.ico' />
           <style>{styleSheet.rules().map(rule => rule.cssText).join('')}</style>
-          <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing' />
+          <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing&key=AIzaSyDHscIq-b-BjHty_zsIonS7uPjZuiBY27U' />
         </head>
         <body>
           <div id='content' dangerouslySetInnerHTML={{__html: content}} />
