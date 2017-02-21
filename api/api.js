@@ -98,13 +98,13 @@ if (config.apiPort) {
     agenda.every(config.live.interval, 'broadcast')
     agenda.start()
     console.log('agenda start')
-    function graceful() {
-      agenda.stop(function() {
+    function graceful () {
+      agenda.stop(function () {
         process.exit(0)
       })
     }
     process.on('SIGTERM', graceful)
-    process.on('SIGINT' , graceful)
+    process.on('SIGINT', graceful)
   })
 } else {
   console.error('==> ERROR: No PORT environment variable has been specified')

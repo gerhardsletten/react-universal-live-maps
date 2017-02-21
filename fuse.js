@@ -9,6 +9,12 @@ const fuseBox = fsbx.FuseBox.init({
     outFile: './static/sourcemaps.js.map'
   },
   outFile: './static/bundle.js',
+  shim: {
+      'xmlhttprequest-ssl': {
+          source: "src/shim/xmlhttprequest.js",
+          exports: "global.XMLHttpRequest"
+      }
+  },
   plugins: [
     fsbx.BabelPlugin({
       config: Object.assign({}, {sourceMaps: true}, JSON.parse(babelrc))
