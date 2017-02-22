@@ -1,6 +1,6 @@
 // browser shim for xmlhttprequest module
 
-global.XMLHttpRequest = function XMLHttpRequest(opts) {
+global.XMLHttpRequestSSL = function XMLHttpRequestSSL(opts) {
   var xdomain = opts.xdomain;
 
   // scheme must be same when usign XDomainRequest

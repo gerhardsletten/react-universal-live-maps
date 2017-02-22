@@ -12,7 +12,7 @@ const fuseBox = fsbx.FuseBox.init({
   shim: {
       'xmlhttprequest-ssl': {
           source: "src/shim/xmlhttprequest.js",
-          exports: "global.XMLHttpRequest"
+          exports: "global.XMLHttpRequestSSL"
       }
   },
   plugins: [
