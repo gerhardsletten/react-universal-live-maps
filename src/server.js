@@ -23,7 +23,8 @@ const app = new Express()
 const server = new http.Server(app)
 const proxy = httpProxy.createProxyServer({
   target: targetUrl,
-  ws: true
+  ws: true,
+  changeOrigin: true
 })
 
 app.use(compression())
@@ -35,10 +36,12 @@ app.use('/api', (req, res) => {
 })
 
 app.use('/ws', (req, res) => {
+  console.log("Init WS conneciton")
   proxy.web(req, res, {target: targetUrl + '/ws'})
 })
 
 server.on('upgrade', (req, socket, head) => {
+  console.log("upgrading WS conneciton")
   proxy.ws(req, socket, head)
 })
 
