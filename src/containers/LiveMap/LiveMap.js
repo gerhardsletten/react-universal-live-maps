@@ -106,11 +106,12 @@ export default class LiveMap extends Component {
   render () {
     const {map, error} = this.props
     if (error || !map) {
+      const message = error || 'No live updates now'
       return (
         <Container>
-          <Helmet title={error} />
+          <Helmet title={message} />
           <div>
-            <h1>{error || 'No live updates now'}</h1>
+            <h1>{message}</h1>
           </div>
         </Container>
       )
