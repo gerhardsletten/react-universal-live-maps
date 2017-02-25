@@ -3,6 +3,7 @@ import http from 'http'
 import Express from 'express'
 import favicon from 'serve-favicon'
 import compression from 'compression'
+import {sync as bundleHasher} from 'md5-file'
 import httpProxy from 'http-proxy'
 import React from 'react'
 import ReactDOM from 'react-dom/server'
@@ -27,6 +28,13 @@ const proxy = httpProxy.createProxyServer({
   changeOrigin: true
 })
 
+console.time('bundleHash')
+
+const bundleHash = bundleHasher('static/dist/bundle.js')
+
+console.timeEnd('bundleHash')
+console.log(bundleHash)
+
 app.use(compression())
 app.use(favicon(path.join(__dirname, '..', 'static', 'favicon.ico')))
 app.use(Express.static(path.join(__dirname, '..', 'static')))
@@ -36,12 +44,12 @@ app.use('/api', (req, res) => {
 })
 
 app.use('/ws', (req, res) => {
-  console.log("Init WS conneciton")
+  console.log('Init WS conneciton')
   proxy.web(req, res, {target: targetUrl + '/ws'})
 })
 
 server.on('upgrade', (req, socket, head) => {
-  console.log("upgrading WS conneciton")
+  console.log('upgrading WS conneciton')
   proxy.ws(req, socket, head)
 })
 
@@ -86,7 +94,7 @@ app.use((req, res) => {
         )
         global.navigator = {userAgent: req.headers['user-agent']}
         res.status(200).send('<!doctype html>\n' +
-          ReactDOM.renderToString(<Html component={component} store={store} />))
+          ReactDOM.renderToString(<Html component={component} hash={bundleHash} store={store} />))
       })
     } else {
       res.status(404).send('Not found')

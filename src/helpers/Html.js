@@ -9,11 +9,12 @@ styleSheet.flush()
 export default class Html extends Component {
   static propTypes = {
     component: PropTypes.node,
-    store: PropTypes.object
+    store: PropTypes.object,
+    hash: PropTypes.string
   }
 
   render () {
-    const {component, store} = this.props
+    const {component, store, hash} = this.props
     const content = component ? ReactDOM.renderToString(component) : ''
     const head = Helmet.rewind()
     return (
@@ -32,7 +33,7 @@ export default class Html extends Component {
         <body>
           <div id='content' dangerouslySetInnerHTML={{__html: content}} />
           <script dangerouslySetInnerHTML={{__html: `window.__data=${serialize(store.getState())}`}} charSet='UTF-8' />
-          <script src='/bundle.js' charSet='UTF-8' />
+          <script src={`/dist/bundle.js?v=${hash}`} charSet='UTF-8' />
         </body>
       </html>
     )

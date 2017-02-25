@@ -5,15 +5,15 @@ const babelrc = fs.readFileSync('./.babelrc')
 const fuseBox = fsbx.FuseBox.init({
   homeDir: 'src/',
   sourceMap: {
-    bundleReference: 'sourcemaps.js.map',
-    outFile: './static/sourcemaps.js.map'
+    bundleReference: './sourcemaps.js.map',
+    outFile: './static/dist/sourcemaps.js.map'
   },
-  outFile: './static/bundle.js',
+  outFile: './static/dist/bundle.js',
   shim: {
-      'xmlhttprequest-ssl': {
-          source: "src/shim/xmlhttprequest.js",
-          exports: "global.XMLHttpRequestSSL"
-      }
+    'xmlhttprequest-ssl': {
+      source: 'src/shim/xmlhttprequest.js',
+      exports: 'global.XMLHttpRequestSSL'
+    }
   },
   plugins: [
     fsbx.BabelPlugin({
@@ -35,6 +35,6 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   fuseBox.devServer('>client.js', {
     httpServer: false,
-    root: 'static'
+    root: 'static/dist'
   })
 }
