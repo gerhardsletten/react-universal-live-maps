@@ -1,6 +1,16 @@
 const fsbx = require('fuse-box')
 const fs = require('fs')
 const babelrc = fs.readFileSync('./.babelrc')
+const isDevelopment = !(process.env.NODE_ENV && process.env.NODE_ENV === 'production')
+
+const prodPlugins = isDevelopment ? [] : [fsbx.UglifyJSPlugin({
+  fromString: true,
+  warnings: true,
+  parse: {
+    strict: true
+  },
+  compress: false
+})]
 
 const fuseBox = fsbx.FuseBox.init({
   homeDir: 'src/',
@@ -22,19 +32,17 @@ const fuseBox = fsbx.FuseBox.init({
     fsbx.EnvPlugin({
       __CLIENT__: true,
       __SERVER__: false,
-      __DEVELOPMENT__: !(process.env.NODE_ENV && process.env.NODE_ENV === 'production'),
+      __DEVELOPMENT__: isDevelopment,
       NODE_ENV: process.env.NODE_ENV
     }),
-    fsbx.JSONPlugin(),
-    fsbx.SVGPlugin(),
-    fsbx.HTMLPlugin({useDefault: false})
-  ]
+    fsbx.JSONPlugin()
+  ].concat(prodPlugins)
 })
-if (process.env.NODE_ENV === 'production') {
-  fuseBox.bundle('>client.js')
-} else {
+if (isDevelopment) {
   fuseBox.devServer('>client.js', {
     httpServer: false,
     root: 'static/dist'
   })
+} else {
+  fuseBox.bundle('>client.js')
 }

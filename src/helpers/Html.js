@@ -28,11 +28,11 @@ export default class Html extends Component {
           <meta name='viewport' content='width=device-width, initial-scale=1' />
           <link rel='shortcut icon' href='/favicon.ico' />
           <style>{styleSheet.rules().map(rule => rule.cssText).join('')}</style>
-          <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing&key=AIzaSyDHscIq-b-BjHty_zsIonS7uPjZuiBY27U' />
         </head>
         <body>
           <div id='content' dangerouslySetInnerHTML={{__html: content}} />
           <script dangerouslySetInnerHTML={{__html: `window.__data=${serialize(store.getState())}`}} charSet='UTF-8' />
+          <script src='https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing&key=AIzaSyDHscIq-b-BjHty_zsIonS7uPjZuiBY27U' />
           <script src={`/dist/bundle.js?v=${hash}`} charSet='UTF-8' />
         </body>
       </html>
