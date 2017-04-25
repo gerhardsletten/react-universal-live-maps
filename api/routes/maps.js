@@ -1,11 +1,12 @@
 import togeojson from '@mapbox/togeojson'
-import {jsdom} from 'jsdom'
 import http from 'http'
 import concat from 'concat-stream'
 import Map from '../models/Map'
 import moment from 'moment-timezone'
+import got from 'got'
 import config from '../../src/config'
 const parser = require('xml2json')
+const DOMParser = require('xmldom').DOMParser
 
 const CACHE_KEY = 'liveCache'
 var cache = require('lazycache')(1000 * 30)
@@ -107,14 +108,11 @@ function handleUpload (url) {
     return Promise.resolve()
   }
   return new Promise((resolve, reject) => {
-    http.get(url, (resp) => {
-      resp.on('error', (err) => reject(err))
-      resp.pipe(concat((buffer) => {
-        const kml = jsdom(buffer.toString())
-        const converted = togeojson.kml(kml)
-        resolve(converted.features[0].geometry)
-      }))
-    })
+    got(url).then(response => {
+      const kml = new DOMParser().parseFromString(response.body)
+      const converted = togeojson.kml(kml)
+      resolve(converted.features[0].geometry)
+    }).catch((err) => reject(err))
   })
 }
 
@@ -137,6 +135,8 @@ function handleFields (fields, required = ['title'], upload = false) {
       }
       if (doc.features) {
         doc.features = JSON.parse(doc.features)
+      } else {
+        delete doc.features
       }
       const errors = []
       required.map((field) => {
@@ -160,6 +160,9 @@ function create (req, res) {
     const doc = new Map(fields)
     doc.save((nada) => {
       res.json(doc)
+    })
+    .catch((err) => {
+      res.status(403).json(err)
     })
   })
   .catch((err) => {

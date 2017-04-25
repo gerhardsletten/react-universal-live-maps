@@ -112,10 +112,10 @@ export default class Admin extends Component {
       showForm: true,
       item: {
         title: 'New map',
-        url: 'http://bikemaster.no/kmlDownload.asp?r=46',
+        url: 'https://bikemaster.no/kmlDownload.asp?r=46',
         date: m.toDate(),
         date_end: moment(m).add(4, 'hour').toDate(),
-        features: JSON.stringify(featureDefault)
+        features: ''
       }
     })
   }
