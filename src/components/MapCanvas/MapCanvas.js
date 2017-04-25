@@ -10,6 +10,8 @@ const icons = {
   last: '/icons/end.svg',
   sprint: '/icons/sprint.svg',
   com: '/icons/com.svg',
+  com2: '/icons/com2.svg',
+  com3: '/icons/com3.svg',
   food: '/icons/food.svg',
   lead: '/icons/lead.svg',
   group: '/icons/group.svg'
