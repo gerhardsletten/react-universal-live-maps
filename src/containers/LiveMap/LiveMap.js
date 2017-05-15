@@ -116,37 +116,21 @@ export default class LiveMap extends Component {
         </Container>
       )
     }
-    const {title, course, date, features, live: {lead, group}} = map
-    const activeMarkers = []
-    let leadElapsed, groupElapsed
-    let message
-    if (moment().isBefore(date)) {
-      message = `Starts sending ${moment(date).format('ddd DD. MMM HH:mm:ss')}`
-    } else {
-      if (lead) {
-        activeMarkers.push({
-          position: lead,
-          icon: 'lead'
-        })
-        leadElapsed = this.getElapsed(course.coordinates, lead)
-        if (leadElapsed > 0) {
-          message = `Lead: ${this.formatDistance(leadElapsed)}`
-        }
-      }
-      if (group) {
-        activeMarkers.push({
-          position: group,
-          icon: 'group'
-        })
-        groupElapsed = this.getElapsed(course.coordinates, group)
-        if (leadElapsed > 0 && groupElapsed > 0) {
-          message += `, Group: ${this.formatDistance(Math.abs(leadElapsed - groupElapsed))} behind`
-        }
-      }
-      if (leadElapsed <= 0 || groupElapsed <= 0) {
-        message = 'GPS units not within track'
-      }
-    }
+    const {title, course, date, features, live} = map
+    const isLive = !moment().isBefore(date)
+    const activeMarkers = (isLive && live) ? [
+      ...((live.lead) ? [{
+        position: live.lead,
+        icon: 'lead'
+      }] : []),
+      ...((live.group) ? [{
+        position: live.group,
+        icon: 'group'
+      }] : [])
+    ] : null
+    const leadElapsed = (live && live.lead) ? this.getElapsed(course.coordinates, live.lead) : 0
+    const groupElapsed = (live && live.group) ? this.getElapsed(course.coordinates, live.group) : 0
+    const message = isLive ? (leadElapsed <= 0 || groupElapsed <= 0) ? 'GPS units not within track' : `${(live && live.lead) ? `Lead: ${this.formatDistance(leadElapsed)}` : ''} ${(live && live.group) ? `, Group: ${this.formatDistance(Math.abs(leadElapsed - groupElapsed))} behind` : ''}` : `Starts sending ${moment(date).format('ddd DD. MMM HH:mm:ss')}`
     return (
       <Container>
         <Helmet title={title} />
@@ -154,7 +138,7 @@ export default class LiveMap extends Component {
           <Map>
             <MapCanvas
               course={course.coordinates}
-              markers={features.features ? features.features.map((feature) => {
+              markers={(features && features.features) ? features.features.map((feature) => {
                 return {
                   position: feature.geometry.coordinates,
                   icon: feature.properties.icon
@@ -166,8 +150,7 @@ export default class LiveMap extends Component {
         )}
         <Bar>
           <Live>LIVE</Live>
-          <Title>{title}</Title>{' '}
-          {message}
+          <Title>{title}</Title>{' '}{message}
         </Bar>
       </Container>
     )

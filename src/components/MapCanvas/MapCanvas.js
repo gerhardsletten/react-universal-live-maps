@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react'
-import {GoogleMapLoader, GoogleMap, Polyline, Marker} from 'react-google-maps'
+import {withGoogleMap, GoogleMap, Marker, Polyline} from 'react-google-maps'
+import withScriptjs from 'react-google-maps/lib/async/withScriptjs'
 import styled from 'styled-components'
 
 import mapStyle from './mapstyle.json'
@@ -25,6 +26,30 @@ const Container = styled.div`
   bottom: 0;
 `
 
+const AsyncGoogleMap = withScriptjs(
+  withGoogleMap(
+    ({styles, onMapLoad, markers, course, first, last, activeMarkers}) => (
+      <GoogleMap
+        ref={onMapLoad}
+        defaultZoom={4}
+        defaultOptions={{
+          styles
+        }}
+      >
+        {course && <Polyline path={course.map((p) => pointToLngLat(p))} />}
+        {first && <Marker position={pointToLngLat(first)} options={{icon: svgSymbol(icons['first'])}} />}
+        {last && <Marker position={pointToLngLat(last)} options={{icon: svgSymbol(icons['last'])}} />}
+        {markers && markers.map(({position, icon}, i) => {
+          return <Marker key={i} position={pointToLngLat(position)} options={{icon: svgSymbol(icons[icon])}} />
+        })}
+        {activeMarkers && activeMarkers.map(({position, icon}, i) => {
+          return <Marker key={i} position={pointToLngLat(position)} options={{icon: svgSymbol(icons[icon], {x: 0, y: 40}, {height: 40, width: 20})}} />
+        })}
+      </GoogleMap>
+    )
+  )
+)
+
 export default class MapCanvas extends Component {
   static propTypes = {
     course: PropTypes.array.isRequired,
@@ -34,7 +59,7 @@ export default class MapCanvas extends Component {
 
   state = {}
 
-  onMapInit () {
+  onMapLoad = (map) => {
     const {mapInited} = this.state
     if (!mapInited) {
       this.setState({mapInited: true}, () => {
@@ -44,7 +69,7 @@ export default class MapCanvas extends Component {
           const point = new global.google.maps.LatLng(pointToLngLat(p))
           bounds.extend(point)
         })
-        this.refs.map.fitBounds(bounds)
+        map.fitBounds(bounds)
       })
     }
   }
@@ -54,45 +79,37 @@ export default class MapCanvas extends Component {
     const {first, last} = arrayExplode(course)
     return (
       <Container>
-        <GoogleMapLoader
+        <AsyncGoogleMap
+          googleMapURL='https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDHscIq-b-BjHty_zsIonS7uPjZuiBY27U'
+          loadingElement={
+            <div style={{ height: `100%` }}>
+              <div
+                style={{
+                  display: `block`,
+                  width: `80px`,
+                  height: `80px`,
+                  margin: `150px auto`,
+                  animation: `fa-spin 2s infinite linear`
+                }}>
+                loading
+              </div>
+            </div>
+          }
           containerElement={
-            <div style={{height: '100%'}} />
+            <div style={{ height: `100%` }} />
           }
-          googleMapElement={
-            <GoogleMap
-              ref='map'
-              onIdle={this.onMapInit.bind(this)}
-              defaultZoom={4}
-              defaultOptions={{
-                styles: mapStyle
-              }}>
-              <Polyline
-                path={course.map((p) => pointToLngLat(p))}
-              />
-              {first && this.renderMarker(first, 'first')}
-              {last && this.renderMarker(last, 'last')}
-              {markers && markers.map((marker, i) => {
-                return this.renderMarker(marker.position, marker.icon, i)
-              })}
-              {activeMarkers && activeMarkers.map((marker, i) => {
-                return this.renderActiveMarker(marker.position, marker.icon, i)
-              })}
-            </GoogleMap>
+          mapElement={
+            <div style={{ height: `100%` }} />
           }
+          onMapLoad={this.onMapLoad}
+          markers={markers}
+          first={first}
+          last={last}
+          activeMarkers={activeMarkers}
+          course={course}
+          styles={mapStyle}
         />
       </Container>
-    )
-  }
-
-  renderActiveMarker (position, icon = 'first', key) {
-    return (
-      <Marker key={key} position={pointToLngLat(position)} options={{icon: svgSymbol(icons[icon], {x: 0, y: 40}, {height: 40, width: 20})}} />
-    )
-  }
-
-  renderMarker (position, icon = 'first', key) {
-    return (
-      <Marker key={key} position={pointToLngLat(position)} options={{icon: svgSymbol(icons[icon])}} />
     )
   }
 }

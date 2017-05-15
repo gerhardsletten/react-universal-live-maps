@@ -42,12 +42,12 @@ export default class MapView extends Component {
         {course.coordinates && (
           <MapCanvas
             course={course.coordinates}
-            markers={features.features ? features.features.map((feature) => {
+            markers={(features && features.features) && features.features.map((feature) => {
               return {
                 position: feature.geometry.coordinates,
                 icon: feature.properties.icon
               }
-            }) : []}
+            })}
           />
         )}
       </Container>

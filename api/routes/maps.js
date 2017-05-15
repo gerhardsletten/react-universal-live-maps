@@ -1,5 +1,4 @@
 import togeojson from '@mapbox/togeojson'
-import http from 'http'
 import concat from 'concat-stream'
 import Map from '../models/Map'
 import moment from 'moment-timezone'
@@ -25,10 +24,10 @@ function findLiveEvents () {
     Map
     .find({
       date: {
-        $lte: moment().tz("Europe/Oslo").utc().toDate()
+        $lte: moment().tz('Europe/Oslo').utc().toDate()
       },
       date_end: {
-        $gte: moment().tz("Europe/Oslo").utc().toDate()
+        $gte: moment().tz('Europe/Oslo').utc().toDate()
       }
     })
     .sort('date')
@@ -80,26 +79,24 @@ function fetchLivePosition (cached = false) {
     return Promise.resolve(cache.get(CACHE_KEY))
   }
   return new Promise((resolve, reject) => {
-    http.get(config.live.url, (resp) => {
-      resp.on('error', (err) => reject(err))
-      resp.pipe(concat((buffer) => {
-        const raw = JSON.parse(parser.toJson(buffer.toString()))
-        if (raw.GPS && raw.GPS.Unit && raw.GPS.Unit.length > 1) {
-          const leadData = raw.GPS.Unit.find((item) => item.gpsID === config.live.lead)
-          const groupData = raw.GPS.Unit.find((item) => item.gpsID === config.live.group)
-          const obj = {}
-          if (leadData) {
-            obj.lead = [parseFloat(leadData.X), parseFloat(leadData.Y)]
-          }
-          if (groupData) {
-            obj.group = [parseFloat(groupData.X), parseFloat(groupData.Y)]
-          }
-          cache.set(CACHE_KEY, obj)
-          return resolve(obj)
+    got(config.live.url).then(({body}) => {
+      const raw = JSON.parse(parser.toJson(body))
+      if (raw.GPS && raw.GPS.Unit && raw.GPS.Unit.length > 1) {
+        const leadData = raw.GPS.Unit.find((item) => item.gpsID === config.live.lead)
+        const groupData = raw.GPS.Unit.find((item) => item.gpsID === config.live.group)
+        const obj = {}
+        if (leadData) {
+          obj.lead = [parseFloat(leadData.X), parseFloat(leadData.Y)]
         }
-        return resolve()
-      }))
+        if (groupData) {
+          obj.group = [parseFloat(groupData.X), parseFloat(groupData.Y)]
+        }
+        cache.set(CACHE_KEY, obj)
+        return resolve(obj)
+      }
+      return resolve()
     })
+    .catch((err) => reject(err))
   })
 }
 

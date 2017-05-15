@@ -48,6 +48,10 @@ const UserBar = styled.div`
   background: #333;
   font-size: 12px;
 `
+const MenuItem = styled.span`
+  display: inline-block;
+  padding: 2px 4px;
+`
 
 @asyncConnect([{
   promise: ({store: {dispatch, getState}}) => {
@@ -105,11 +109,11 @@ export default class App extends Component {
       <Container>
         {user && (
           <UserBar>
-            <Link to='/'>Live</Link>
-            <Link to='/maps'>Maps</Link>
-            <Link to='/admin'>Admin</Link>
-            Logged in as {user.username}
-            <button onClick={this.handleLogout}>Logout</button>
+            <MenuItem><Link to='/'>Live</Link></MenuItem>
+            <MenuItem><Link to='/maps'>Maps</Link></MenuItem>
+            <MenuItem><Link to='/admin'>Admin</Link></MenuItem>
+            <MenuItem>Logged in as {user.username}</MenuItem>
+            <MenuItem><button onClick={this.handleLogout}>Logout</button></MenuItem>
           </UserBar>
         )}
         {this.props.children}
